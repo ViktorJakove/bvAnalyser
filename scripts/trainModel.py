@@ -11,7 +11,7 @@ path = kagglehub.dataset_download("andradaolteanu/gtzan-dataset-music-genre-clas
 print("Path to dataset files:", path)
 
 
-# Vytvoření jednoduché CNN
+# Vytvoreni jednoduche CNN
 model = keras.Sequential([
     layers.Conv2D(32, (3, 3), activation="relu", input_shape=(128, 128, 1)),
     layers.MaxPooling2D((2, 2)),
@@ -29,5 +29,5 @@ model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=
 
 
 
-# Trénování modelu (data musíš připravit)
+# Trénování modelu (data pripravit)
 # model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val))
