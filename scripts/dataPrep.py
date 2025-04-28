@@ -1,35 +1,33 @@
 import os
-import librosa
+import pandas as pd
 import numpy as np
+from sklearn.preprocessing import StandardScaler
 
-DATASET_PATH = "../data/GTZAN/"
-OUTPUT_PATH = "../data/preprocessed/"
-
-GENRES = ["blues", "classical", "country", "disco", "hiphop", 
-          "jazz", "metal", "pop", "reggae", "rock"]
+CSV_PATH = "../bvAnalyser/data/features_30_sec.csv"
+OUTPUT_PATH = "../bvAnalyser/data/preprocessed/"
 
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 
-X, y = [], []
+# Read the CSV file
+data = pd.read_csv(CSV_PATH)
 
-for genre_idx, genre in enumerate(GENRES):
-    genre_folder = os.path.join(DATASET_PATH, genre)
-    for file in os.listdir(genre_folder):
-        if file.endswith(".wav"):  # GTZAN uses WAV files
-            file_path = os.path.join(genre_folder, file)
-            y_audio, sr = librosa.load(file_path, sr=22050, mono=True)
-            
-            spectrogram = librosa.feature.melspectrogram(y=y_audio, sr=sr, n_mels=128)
-            spectrogram_db = librosa.power_to_db(spectrogram, ref=np.max)
-            
-            spectrogram_resized = np.resize(spectrogram_db, (128, 128))
-            
-            X.append(spectrogram_resized)
-            y.append(genre_idx)
+# Extract features and labels
+X = data.iloc[:, 1:-1].values  # All columns except filename and label
+y = data.iloc[:, -1].values    # Label column
 
-X = np.array(X).reshape(-1, 128, 128, 1)
-y = np.array(y)
+# Encode labels as integers
+from sklearn.preprocessing import LabelEncoder
+label_encoder = LabelEncoder()
+y = label_encoder.fit_transform(y)
 
+# Save the label encoder classes for later use
+np.save(os.path.join(OUTPUT_PATH, "label_classes.npy"), label_encoder.classes_)
+
+# Normalize features
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+# Save the processed data
 np.save(os.path.join(OUTPUT_PATH, "X.npy"), X)
 np.save(os.path.join(OUTPUT_PATH, "y.npy"), y)
 
