@@ -1,13 +1,9 @@
 import os
 
-#preprocessing
-print("preprocessing...")
-os.system("python scripts/dataPrep.py")
-
-#training
-print("model training...")
-os.system("python scripts/trainModel.py")
+#csv gen
+print("converting your song...")
+os.system("python scripts/csvGeneration.py")
 
 #testing
-print("model testing...")
-os.system("python scripts/testModel.py")
+print("enumerating the prediction...")
+os.system("python scripts/testSong.py")
