@@ -28,7 +28,9 @@ def extract_features(file_path):
             padding = target_length - len(y)
             y = np.pad(y, (0, padding), mode='constant')
         else:
-            y = y[:target_length]  # Trim 30
+            start_sample = (len(y) - target_length) // 2
+            end_sample = start_sample + target_length
+            y = y[start_sample:end_sample]
         try:
             tempo = float(librosa.feature.rhythm.tempo(y=y, sr=sr)[0])
         except AttributeError:
