@@ -4,6 +4,7 @@ import tensorflow as tf
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
 import librosa
+import librosa.display
 
 MODEL_PATH = "../bvAnalyser/models/model.h5"
 TEST_FILE = "../bvAnalyser/data/custom_features_30_sec.csv"
@@ -35,6 +36,12 @@ predicted_genre = label_classes[predicted_labels[0]]
 y, sr = librosa.load("../bvAnalyser/data/custom_audio/A. Dvorak_ Slavonic dances No.3, Polka, A flat major(1).wav", sr=None)
 tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
 
+chroma = librosa.feature.chroma_cens(y=y, sr=sr)
+key_index = np.argmax(np.mean(chroma, axis=1))
+keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+key = keys[key_index]
+
 print("\nPrediction for the song:")
 print(f"Predicted Genre: {predicted_genre}")
 print(f"Tempo of the song: {tempo} BPM")
+print(f"Key of the song: {key}")
