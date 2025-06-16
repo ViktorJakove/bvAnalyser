@@ -22,13 +22,16 @@ X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_st
 class_weights = compute_class_weight("balanced", classes=np.unique(y_train), y=y_train)
 class_weights = dict(enumerate(class_weights))
 
-# Define CNN model
+# Define CNN model with improvements
 model = keras.Sequential([
     layers.Conv1D(64, kernel_size=3, activation="relu", input_shape=(X.shape[1], 1)),
+    layers.BatchNormalization(),
     layers.MaxPooling1D(pool_size=2),
     layers.Conv1D(128, kernel_size=3, activation="relu"),
+    layers.BatchNormalization(),
     layers.MaxPooling1D(pool_size=2),
     layers.Conv1D(256, kernel_size=3, activation="relu"),
+    layers.BatchNormalization(),
     layers.GlobalAveragePooling1D(),
     layers.Dense(128, activation="relu"),
     layers.Dropout(0.4),
@@ -37,12 +40,11 @@ model = keras.Sequential([
 
 model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
 
-# Train model with early stopping
-early_stopping = keras.callbacks.EarlyStopping(monitor="val_loss", patience=10, restore_best_weights=True)
+early_stopping = keras.callbacks.EarlyStopping(monitor="val_accuracy", patience=10, restore_best_weights=True)
 model.fit(X_train, y_train, epochs=100, validation_data=(X_val, y_val), class_weight=class_weights, callbacks=[early_stopping])
 
 # Save model
 os.makedirs("../bvAnalyser/models/", exist_ok=True)
 model.save("../bvAnalyser/models/model.h5")
 
-print("Training completed. Model saved as model.h5")
+print("Training completed with augmented data. Model saved as model.h5")

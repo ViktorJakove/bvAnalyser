@@ -22,7 +22,19 @@ np.save(os.path.join(OUTPUT_PATH, "label_classes.npy"), label_encoder.classes_)
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
-np.save(os.path.join(OUTPUT_PATH, "X.npy"), X)
-np.save(os.path.join(OUTPUT_PATH, "y.npy"), y)
+# Data augmentation: Add noise to features
+def augment_data(X, noise_factor=0.01):
+    noise = np.random.normal(0, noise_factor, X.shape)
+    return X + noise
 
-print("Preprocessing completed. Data saved in:", OUTPUT_PATH)
+X_augmented = augment_data(X)
+y_augmented = y  # Labels remain unchanged
+
+# Combine original and augmented data
+X_combined = np.vstack([X, X_augmented])
+y_combined = np.hstack([y, y_augmented])
+
+np.save(os.path.join(OUTPUT_PATH, "X.npy"), X_combined)
+np.save(os.path.join(OUTPUT_PATH, "y.npy"), y_combined)
+
+print("Preprocessing completed with augmentation. Data saved in:", OUTPUT_PATH)
