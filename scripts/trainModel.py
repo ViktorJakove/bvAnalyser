@@ -47,4 +47,4 @@ model.fit(X_train, y_train, epochs=100, validation_data=(X_val, y_val), class_we
 os.makedirs("../bvAnalyser/models/", exist_ok=True)
 model.save("../bvAnalyser/models/model.h5")
 
-print("Training completed with augmented data. Model saved as model.h5")
+print("Training completed. Model saved as model.h5")
